@@ -1,0 +1,49 @@
+name: DumprX Firmware Dump
+
+on:
+  workflow_dispatch:
+    inputs:
+      firmware_url:
+        description: 'Firmware URL / link (direct, mega.nz, mediafire, gdrive, onedrive, androidfilehost)'
+        required: true
+        type: string
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - name: Free up disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force
+          df -h
+
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          chmod +x setup.sh
+          ./setup.sh
+
+      - name: Configure GitHub upload credentials
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::error::Secret GH_TOKEN belum di-set di repo Settings > Secrets and variables > Actions"
+            exit 1
+          fi
+          echo "$GH_TOKEN" > .github_token
+          echo "${{ github.actor }}" > .github_orgname
+
+      - name: Run DumprX
+        run: |
+          chmod +x dumper.sh
+          ./dumper.sh "${{ inputs.firmware_url }}"
