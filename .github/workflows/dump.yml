@@ -37,30 +37,19 @@ jobs:
         with:
           swap-size-gb: 10
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
       - name: Install dependencies
         run: |
           chmod +x setup.sh
           ./setup.sh
           
       - name: Configure GitHub upload credentials
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          if [ -z "$GH_TOKEN" ]; then
-            echo "::error::Secret GH_TOKEN belum di-set di repo Settings > Secrets and variables > Actions"
-            exit 1
-          fi
-          echo "$GH_TOKEN" > .github_token
+          echo "${{ secrets.GH_TOKEN }}" > .github_token
           echo "${{ github.actor }}" > .github_orgname
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Run DumprX
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           chmod +x dumper.sh
           ./dumper.sh "${{ inputs.firmware_url }}"
