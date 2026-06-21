@@ -35,7 +35,7 @@ jobs:
       - name: Setup more Swap
         uses: thejerrybao/setup-swap-space@v1   # or pierotofy/set-swap-space
         with:
-          swap-size-gb: 10
+          swap-size-gb: 15
 
       - name: Install dependencies
         run: |
