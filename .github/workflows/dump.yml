@@ -47,6 +47,11 @@ jobs:
           chmod +x setup.sh
           ./setup.sh
 
+      - name: setup config
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Configure GitHub upload credentials
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
