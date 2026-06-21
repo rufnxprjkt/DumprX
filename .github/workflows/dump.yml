@@ -46,12 +46,7 @@ jobs:
         run: |
           chmod +x setup.sh
           ./setup.sh
-
-      - name: setup config
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
+          
       - name: Configure GitHub upload credentials
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -65,5 +60,7 @@ jobs:
 
       - name: Run DumprX
         run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           chmod +x dumper.sh
           ./dumper.sh "${{ inputs.firmware_url }}"
